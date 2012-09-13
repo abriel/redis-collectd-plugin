@@ -57,8 +57,8 @@ def fetch_info():
     if REDIS_PASS:
       s.sendall('auth %s\r\n' % REDIS_PASS)
       response = fp.readline()
-      if response == 'OK':
-        low_verbose('Authenticated')
+      if response.startswith('OK'):
+        log_verbose('redis_info plugin: Authenticated')
       else:
         collectd.error('redis_info plugin: Failed to authenticate')
         return None
@@ -107,7 +107,7 @@ def configure_callback(conf):
         elif node.key == 'Port':
             REDIS_PORT = int(node.values[0])
         elif node.key == 'Password':
-            REDIS_PASS = int(node.values[0])
+            REDIS_PASS = node.values[0]
         elif node.key == 'Verbose':
             VERBOSE_LOGGING = bool(node.values[0])
         else:
