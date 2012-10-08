@@ -78,7 +78,7 @@ def parse_info(info_lines):
     info = {}
     for line in info_lines:
         if ':' not in line:
-            collectd.warning('redis_info plugin: Bad format for info line: %s'
+            log_verbose('redis_info plugin: Bad format for info line: %s'
                              % line)
             continue
 
