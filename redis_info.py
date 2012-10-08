@@ -116,7 +116,7 @@ def configure_callback(conf):
     log_verbose('Configured with host=%s, port=%s' % (REDIS_HOST, REDIS_PORT))
 
 
-def dispatch_value(info, key, type, type_instance=None):
+def dispatch_value(info, key, type, type_instance=None, variants=None):
     """Read a key from info response data and dispatch a value"""
     if key not in info:
         collectd.warning('redis_info plugin: Info key not found: %s' % key)
@@ -125,7 +125,14 @@ def dispatch_value(info, key, type, type_instance=None):
     if not type_instance:
         type_instance = key
 
-    value = int(info[key])
+    if variants:
+        if info[key].strip() in variants:
+            value = variants[info[key].strip()]
+        else:
+            return
+    else:
+        value = int(info[key])
+
     log_verbose('Sending value: %s=%s' % (type_instance, value))
 
     val = collectd.Values(plugin='redis_info')
@@ -149,11 +156,18 @@ def read_callback():
     dispatch_value(info, 'connected_slaves', 'gauge')
     dispatch_value(info, 'blocked_clients', 'gauge')
     dispatch_value(info, 'used_memory', 'bytes')
-    dispatch_value(info, 'changes_since_last_save', 'gauge')
+    dispatch_value(info, 'rdb_changes_since_last_save', 'gauge')
     dispatch_value(info, 'total_connections_received', 'counter',
                    'connections_recieved')
     dispatch_value(info, 'total_commands_processed', 'counter',
                    'commands_processed')
+    dispatch_value(info, 'keyspace_hits', 'counter', 'hits')
+    dispatch_value(info, 'keyspace_misses', 'counter', 'misses')
+    dispatch_value(info, 'master_link_status', 'gauge', variants={'up': 1, 'down': 0})
+    dispatch_value(info, 'master_last_io_seconds_ago', 'gauge')
+    dispatch_value(info, 'master_sync_in_progress', 'gauge')
+    dispatch_value(info, 'role', 'gauge', variants={'slave': 0, 'master': 1})
+    dispatch_value(info, 'rdb_bgsave_in_progress', 'gauge', 'background_save_in_progress')
 
     # database and vm stats
     for key in info:
