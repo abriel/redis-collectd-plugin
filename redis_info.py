@@ -151,7 +151,7 @@ def read_callback():
         return
 
     # send high-level values
-    dispatch_value(info, 'uptime_in_seconds','gauge')
+    dispatch_value(info, 'uptime_in_seconds', 'uptime', 'uptime')
     dispatch_value(info, 'connected_clients', 'gauge')
     dispatch_value(info, 'connected_slaves', 'gauge')
     dispatch_value(info, 'blocked_clients', 'gauge')
