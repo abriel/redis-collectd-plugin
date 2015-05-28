@@ -57,7 +57,7 @@ def fetch_info():
     if REDIS_PASS:
       s.sendall('auth %s\r\n' % REDIS_PASS)
       response = fp.readline()
-      if response.startswith('OK'):
+      if response.startswith('+OK'):
         log_verbose('redis_info plugin: Authenticated')
       else:
         collectd.error('redis_info plugin: Failed to authenticate')
