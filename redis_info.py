@@ -173,9 +173,6 @@ def read_callback():
                    'commands_processed')
     dispatch_value(info, 'keyspace_hits', 'counter', 'hits')
     dispatch_value(info, 'keyspace_misses', 'counter', 'misses')
-    dispatch_value(info, 'master_link_status', 'gauge', variants={'up': 1, 'down': 0})
-    dispatch_value(info, 'master_last_io_seconds_ago', 'gauge')
-    dispatch_value(info, 'master_sync_in_progress', 'gauge')
     dispatch_value(info, 'role', 'gauge', variants={'slave': 0, 'master': 1})
     dispatch_value(info, 'rdb_bgsave_in_progress', 'gauge', 'background_save_in_progress')
 
@@ -183,6 +180,8 @@ def read_callback():
     if 'master_repl_offset' in info: dispatch_value(info, 'master_repl_offset', 'gauge')
     if 'master_last_io_seconds_ago' in info: dispatch_value(info, 'master_last_io_seconds_ago', 'gauge')
     if 'slave_repl_offset' in info: dispatch_value(info, 'slave_repl_offset', 'gauge')
+    if 'master_link_status' in info: dispatch_value(info, 'master_link_status', 'gauge', variants={'up': 1, 'down': 0})
+    if 'master_sync_in_progress' in info: dispatch_value(info, 'master_sync_in_progress', 'gauge')
 
     # database and vm stats
     for key in info:
