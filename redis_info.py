@@ -176,6 +176,14 @@ def read_callback():
     dispatch_value(info, 'role', 'gauge', variants={'slave': 0, 'master': 1})
     dispatch_value(info, 'rdb_bgsave_in_progress', 'gauge', 'background_save_in_progress')
 
+    slaves_delays = map(
+        lambda x: x[1]['delay'],
+        filter(lambda x: re.compile('slave\d+').match(x[0]), info.items())
+    )
+    if slaves_delays:
+        info['slaves_max_delay'] = max(slaves_delays)
+        dispatch_value(info, 'slaves_max_delay', 'gauge')
+
     # send replication stats, but only if they exist (some belong to master only, some to slaves only)
     if 'master_repl_offset' in info: dispatch_value(info, 'master_repl_offset', 'gauge')
     if 'master_last_io_seconds_ago' in info: dispatch_value(info, 'master_last_io_seconds_ago', 'gauge')
@@ -191,7 +199,7 @@ def read_callback():
             dispatch_value(info, key, 'gauge')
         if key.startswith('db'):
             dispatch_value(info[key], 'keys', 'gauge', '%s-keys' % key)
-        if key.startswith('slave'):
+        if key.startswith('slave') and type(info[key]) == dict:
             dispatch_value(info[key], 'delay', 'gauge', '%s-delay' % key)
 
 
